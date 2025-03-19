@@ -9,21 +9,24 @@ import org.testng.annotations.BeforeMethod;
 import java.time.Duration;
 
 public class BaseTest {
-    protected WebDriver driver;
+	protected static WebDriver driver; // Made static
 
-    @BeforeMethod
-    public void setup() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.get("https://www.linkedin.com/");
-    }
+	@BeforeMethod
+	public void setup() {
+		if (driver == null) { // Prevents multiple browser instances
+			WebDriverManager.chromedriver().setup();
+			driver = new ChromeDriver();
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		}
+		driver.get("https://www.linkedin.com/feed/");
+	}
 
-    @AfterMethod
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
+	@AfterMethod
+	public void teardown() {
+		if (driver != null) {
+			driver.quit();
+			driver = null; // Reset driver for next test
+		}
+	}
 }
